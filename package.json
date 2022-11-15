@@ -1,0 +1,16 @@
+{
+  "name": "auth_labs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Destaby/auth_examples_labs.git",
+  "author": "Destaby <rudik.nick.nick@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
+    "on-finished": "^2.4.1",
+    "uuid": "^9.0.0"
+  }
+}

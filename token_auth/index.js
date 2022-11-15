@@ -3,8 +3,9 @@ const express = require('express');
 const onFinished = require('on-finished');
 const bodyParser = require('body-parser');
 const path = require('path');
-const port = 3000;
+const port = 3001;
 const fs = require('fs');
+const { hashPassword, validatePassword } = require('../common');
 
 const app = express();
 app.use(bodyParser.json());
@@ -88,7 +89,7 @@ app.get('/', (req, res) => {
     if (req.session.username) {
         return res.json({
             username: req.session.username,
-            logout: 'http://localhost:3000/logout'
+            logout: `http://localhost:${port}/logout`
         })
     }
     res.sendFile(path.join(__dirname+'/index.html'));
@@ -99,30 +100,35 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-const users = [
-    {
-        login: 'Login',
-        password: 'Password',
-        username: 'Username',
-    },
-    {
-        login: 'Login1',
-        password: 'Password1',
-        username: 'Username1',
-    }
+const getUsers = async () => [
+  {
+    login: 'Login',
+    password: await hashPassword('Password'),
+    username: 'Username',
+  },
+  {
+      login: 'Login1',
+      password: await hashPassword('Password1'),
+      username: 'Username1',
+  },
+  {
+    login: 'Mykola',
+    password: await hashPassword('Rudyk'),
+    username: 'Mykola Rudyk',
+  }
 ]
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { login, password } = req.body;
 
-    const user = users.find((user) => {
-        if (user.login == login && user.password == password) {
-            return true;
-        }
-        return false
-    });
+    const users = await getUsers();
 
-    if (user) {
+    console.log({ login, password, users })
+
+    const user = users.find((user) => user.login === login);
+    const validPassword = await validatePassword(password, user.password);
+
+    if (user && validPassword) {
         req.session.username = user.username;
         req.session.login = user.login;
 

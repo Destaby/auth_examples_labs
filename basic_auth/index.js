@@ -1,43 +1,54 @@
-const express = require('express')
+const express = require('express');
+const { sleep, NotAuthorizedHandler } = require('../common');
 const app = express()
-const port = 3000
+const port = 3001
 
-app.use((req, res, next) => {
-    console.log('\n=======================================================\n');
+const MAX_TRIES = 3;
+const SLEEP_TIME = 1000 * 5;
 
-    const authorizationHeader = req.get('Authorization');
-    console.log('authorizationHeader', authorizationHeader);
+const naHandler = new NotAuthorizedHandler(__dirname, MAX_TRIES);
 
-    if (!authorizationHeader) {
-        res.setHeader('WWW-Authenticate', 'Basic realm="Ukraine"');
-        res.status(401);
-        res.send('Unauthorized');
-        return;
-    }
+app.use(async (req, res, next) => {
+	console.log('\n=======================================================\n');
 
-    const authorizationBase64Part = authorizationHeader.split(' ')[1];
+	const authorizationHeader = req.get('Authorization');
+	console.log('authorizationHeader', authorizationHeader);
 
-    const decodedAuthorizationHeader = Buffer.from(authorizationBase64Part, 'base64').toString('utf-8');
-    console.log('decodedAuthorizationHeader', decodedAuthorizationHeader);
+  const userIp = req.socket.remoteAddress;
 
-    const login = decodedAuthorizationHeader.split(':')[0];
-    const password = decodedAuthorizationHeader.split(':')[1];
-    console.log('Login/Password', login, password);
+	if (authorizationHeader) {
+		const authorizationBase64Part = authorizationHeader.split(' ')[1];
 
-    if (login == 'DateArt' && password == '2408') {
-        req.login = login;
-        return next();
-    }
+		const decodedAuthorizationHeader = Buffer.from(authorizationBase64Part, 'base64').toString('utf-8');
+		console.log('decodedAuthorizationHeader', decodedAuthorizationHeader);
 
-    res.setHeader('WWW-Authenticate', 'Basic realm="Ukraine"');
-    res.status(401);
-    res.send('Unauthorized');
+		const [login, password] = decodedAuthorizationHeader.split(':');
+		console.log('Login/Password', login, password);
+
+		if (login == 'Mykola' && password == 'Rudyk') {
+        if (naHandler.get(userIp)) {
+          naHandler.refresh(userIp)
+        }
+				req.login = login;
+				return next();
+		}
+	}
+
+  naHandler.inc(userIp)
+
+  if (naHandler.get(userIp) >= MAX_TRIES) {
+    await sleep(SLEEP_TIME, () => naHandler.refresh(userIp));
+  }
+
+	res.setHeader('WWW-Authenticate', 'Basic realm="Ukraine"');
+	res.status(401);
+	res.send('Unauthorized');
 });
 
 app.get('/', (req, res) => {
-    res.send(`Hello ${req.login}`);
+	res.send(`Hello ${req.login}`);
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+	console.log(`Example app listening on port ${port}`)
 })
