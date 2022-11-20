@@ -8,7 +8,7 @@ const port = 3001;
 const fs = require('fs');
 const { NotAuthorizedHandler, hashPassword, validatePassword } = require('../common');
 
-const MAX_TRIES = 4;
+const MAX_TRIES = 4000;
 const SLEEP_TIME = 1000 * 10;
 
 const app = express();
