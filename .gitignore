@@ -106,3 +106,5 @@ dist
 
 ips.json
 sessions.json
+*.token
+*.refreshToken

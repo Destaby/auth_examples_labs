@@ -1,5 +1,7 @@
 const request = require('request');
+const fs = require('fs');
 const { getEnvVariables } = require('./helpers');
+const path = require('path');
 
 const CLIENT_SECRET_ENV_NAME = 'CLIENT_SECRET';
 const API_IDENTIFIER = 'https://rudyk.eu.auth0.com/api/v2/';
@@ -25,6 +27,8 @@ const options = {
 const getToken = () => request(options, function (error, response, body) {
   if (error) throw new Error(error);
   console.log(body);
+  const { access_token } = JSON.parse(body)
+  fs.writeFileSync(path.join(__dirname, '.token'), access_token)
 });
 
 module.exports = { getToken };

@@ -7,7 +7,12 @@
   "license": "MIT",
   "scripts": {
     "lab2:app-token": "ACTION=getToken node lab2/index.js",
-    "lab2:create-user": "ACTION=createUser node lab2/index.js"
+    "lab2:create-user": "ACTION=createUser node lab2/index.js",
+    "lab3:app-token": "ACTION=getToken node lab3/index.js",
+    "lab3:create-user": "ACTION=createUser node lab3/index.js",
+    "lab3:resource-owner-password": "ACTION=resourceOwnerPassword node lab3/index.js",
+    "lab3:refresh-token": "ACTION=refreshToken node lab3/index.js",
+    "lab3:set-new-password": "ACTION=setNewPassword node lab3/index.js"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
