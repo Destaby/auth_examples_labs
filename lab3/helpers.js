@@ -28,6 +28,7 @@ const writeFile = (fileName, content, callback) =>
       throw new Error(err);
     }
     if (callback) callback(data);
+    resolve()
   }));
 
 module.exports = { getEnvVariables, readFile, writeFile };

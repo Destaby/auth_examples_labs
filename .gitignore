@@ -108,3 +108,4 @@ ips.json
 sessions.json
 *.token
 *.refreshToken
+users
