@@ -109,3 +109,5 @@ sessions.json
 *.token
 *.refreshToken
 users
+keys
+.state

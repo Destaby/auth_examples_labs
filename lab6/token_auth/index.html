@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+
+    <body>
+        <main id="main-holder">
+            <a href="/logout" id="logout">Logout</a>
+
+            <h1 id="login-header">You are not logged in</h1>
+
+            <button id="login-form-submit">Login</button>
+
+        </main>
+    </body>
+
+
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            background-color: #3a3a3a;
+        }
+
+        #logout {
+            opacity: 0;
+        }
+
+        #main-holder {
+            width: 50%;
+            height: 70%;
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            background-color: white;
+            border-radius: 7px;
+            box-shadow: 0px 0px 5px 2px black;
+        }
+
+        #login-form-submit {
+            width: 100%;
+            padding: 7px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            background-color: #3a3a3a;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+
+    <script>
+        let session = sessionStorage.getItem('session');
+
+        let token;
+
+        try {
+            token = JSON.parse(session).token;
+        } catch(e) {}
+
+        const logoutLink =  document.getElementById("logout");
+        const loginButton = document.getElementById("login-form-submit");
+
+        if (token) {
+          const mainHolder = document.getElementById("main-holder");
+          const loginHeader = document.getElementById("login-header");
+
+          loginHeader.remove();
+          loginButton.remove();
+
+          mainHolder.append('You are logged in');
+          logoutLink.style.opacity = 1;
+        }
+        
+        logoutLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            axios.get('/logout', {
+                headers: {
+                    Authorization: token
+                }
+            }).finally(() => {
+              sessionStorage.removeItem('session');
+              location.reload();
+            })
+        });
+
+        loginButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            location.replace('/login');
+        })
+    </script>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>...</title>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+
+    <body>
+    </body>
+
+
+    <script>
+
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+          get: (searchParams, prop) => searchParams.get(prop),
+        });
+
+        const { code, state } = params;
+
+        if (code && state) {
+          axios.get(`authorize?code=${code}&state=${state}`).then(response => {
+              if (response?.data?.token) {
+                sessionStorage.setItem('session', JSON.stringify(response.data));
+                console.log({ response })
+                location.replace('/');
+              } 
+          })
+        }
+    </script>
+</html>
